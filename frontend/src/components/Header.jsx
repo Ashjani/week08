@@ -35,6 +35,14 @@ const Header = () => {
           theme.zIndex.drawer + 1,
       }}
     >
+     <Box 
+     sx={{ 
+      backgroundColor: "#FFEB3B", color: "#000", 
+      textAlign: "center", py: 0.5, fontWeight: "bold" }}
+      >
+  🚀 This was Deployed by Automated CI/CD Pipeline
+      </Box> 
+      
       <Toolbar>
         <Typography
           variant="h6"
