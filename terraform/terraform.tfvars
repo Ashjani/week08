@@ -1,14 +1,14 @@
 location            = "Australia East"
-resource_group_name = "koalatech-week08-rg"
+resource_group_name = "koalatech-week09-rg"
 
 # Replace with a unique name for your Azure Container Registry 
-acr_name             = "acrweek08s224948386"
+acr_name             = "acrweek09s224948386"
 
 # Replace with a unique name for your Azure Storage Account
-storage_account_name = "stweek08s224948386"
+storage_account_name = "stweek09s224948386"
 
 # Replace with a unique name for your Azure Kubernetes Service cluster
-aks_cluster_name = "aksweek08s224948386"
+aks_cluster_name = "aksweek09s224948386"
 aks_dns_prefix   = "koalatech"
 
 aks_node_count   = 3
@@ -19,6 +19,6 @@ environment = "development"
 tags = {
     Project    = "KoalaTech Course Platform"
     ManagedBy  = "Terraform"
-    Practical  = "Week08"
+    Practical  = "Week09"
     Environment = "Development"
 }
