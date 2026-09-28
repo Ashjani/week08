@@ -8,6 +8,7 @@ from sqlalchemy.exc import OperationalError
 from app.db import Base, engine
 from app.routers import courses
 
+from prometheus_fastapi_instrumentator import Instrumentator
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,7 +63,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
-
+Instrumentator().instrument(app).expose(app)
 
 app.include_router(courses.router)
 
