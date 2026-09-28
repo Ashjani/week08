@@ -3,7 +3,7 @@ name: 03 - Test Staging
 on:
   workflow_run:
     workflows:
-      "03 - Test Staging"
+      "02 - Deploy to Staging"
     types:
       - completed
     branches:
