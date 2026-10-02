@@ -1,4 +1,4 @@
-name: 05 - Auto Rollback
+name: 06 - Auto Rollback
 
 on:
   repository_dispatch:
