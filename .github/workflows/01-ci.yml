@@ -25,6 +25,7 @@ jobs:
     strategy:
       fail-fast: false
 
+#test      
       matrix:
         include:
           - service: user-service
