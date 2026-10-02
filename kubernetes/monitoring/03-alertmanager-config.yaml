@@ -10,7 +10,7 @@ spec:
     receiver: relay-webhook
     matchers:
       - name: alertname
-        value: PodCrashLooping
+        value: KubePodCrashLooping
         matchType: =
     repeatInterval: 5m
   receivers:
