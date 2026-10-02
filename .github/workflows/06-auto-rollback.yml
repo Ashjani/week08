@@ -26,5 +26,37 @@ jobs:
 
       - name: Roll back the deployment
         run: |
-          kubectl rollout undo deployment/${{ steps.service.outputs.service }} -n ${{ github.event.client_payload.namespace }}
-          kubectl rollout status deployment/${{ steps.service.outputs.service }} -n ${{ github.event.client_payload.namespace }} --timeout=120s
+          set -e
+          DEPLOY="${{ steps.service.outputs.service }}"
+          NS="${{ github.event.client_payload.namespace }}"
+
+          # Get current revision so we can skip it in the search
+          CURRENT=$(kubectl get deployment $DEPLOY -n $NS -o jsonpath='{.metadata.annotations.deployment\.kubernetes\.io/revision}')
+
+          # List all revision numbers, newest first
+          REVISIONS=$(kubectl rollout history deployment/$DEPLOY -n $NS | awk 'NR>2 {print $1}' | sort -rn)
+
+          TARGET=""
+          for REV in $REVISIONS; do
+            if [ "$REV" == "$CURRENT" ]; then
+              continue
+            fi
+            TEMPLATE=$(kubectl rollout history deployment/$DEPLOY -n $NS --revision=$REV)
+            if echo "$TEMPLATE" | grep -q "placeholder"; then
+              continue
+            fi
+            if echo "$TEMPLATE" | grep -q "exit 1"; then
+              continue
+            fi
+            TARGET=$REV
+            break
+          done
+
+          if [ -z "$TARGET" ]; then
+            echo "No known-good revision found to roll back to."
+            exit 1
+          fi
+
+          echo "Rolling back $DEPLOY in $NS to revision $TARGET"
+          kubectl rollout undo deployment/$DEPLOY -n $NS --to-revision=$TARGET
+          kubectl rollout status deployment/$DEPLOY -n $NS --timeout=120s
