@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: koalatech-rollback-webhook
+  namespace: staging        
+  labels:
+    release: monitoring
+spec:
+  route:
+    receiver: relay-webhook
+    matchers:
+      - name: alertname
+        value: PodCrashLooping
+        matchType: =
+    repeatInterval: 5m
+  receivers:
+    - name: relay-webhook
+      webhookConfigs:
+        - url: http://koalatech-relay.monitoring.svc.cluster.local:5000/webhook
+          sendResolved: false

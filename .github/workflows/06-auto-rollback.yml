@@ -1,0 +1,30 @@
+name: 05 - Auto Rollback
+
+on:
+  repository_dispatch:
+    types: [rollback-trigger]
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS credentials
+        run: az aks get-credentials --resource-group koalatech-week09-rg --name aksweek09s224948386 --overwrite-existing
+
+      - name: Determine affected service from alert
+        id: service
+        run: |
+          POD="${{ github.event.client_payload.pod }}"
+          SERVICE=$(echo "$POD" | sed -E 's/-[a-z0-9]+-[a-z0-9]+$//')
+          echo "Rollback triggered for pod: $POD (namespace: ${{ github.event.client_payload.namespace }})"
+          echo "service=$SERVICE" >> $GITHUB_OUTPUT
+
+      - name: Roll back the deployment
+        run: |
+          kubectl rollout undo deployment/${{ steps.service.outputs.service }} -n ${{ github.event.client_payload.namespace }}
+          kubectl rollout status deployment/${{ steps.service.outputs.service }} -n ${{ github.event.client_payload.namespace }} --timeout=120s
